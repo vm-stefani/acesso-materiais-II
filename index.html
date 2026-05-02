@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Portal de Materiais</title>
+    <meta
+      name="description"
+      content="Portal privado para visualizar materiais em PDF diretamente no navegador."
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <aside class="library-panel" aria-label="Materiais disponíveis">
+        <header class="brand">
+          <div class="brand-mark" aria-hidden="true">PDF</div>
+          <div>
+            <p class="eyebrow">Área do cliente</p>
+            <h1>Materiais</h1>
+          </div>
+        </header>
+
+        <section class="access-card" aria-label="Acesso">
+          <label class="field-label" for="accessCode">Código de acesso</label>
+          <div class="access-row">
+            <input
+              id="accessCode"
+              type="password"
+              autocomplete="off"
+              placeholder="Digite seu código"
+            />
+            <button id="accessButton" class="primary-button" type="button">Entrar</button>
+            <button id="logoutButton" class="ghost-button" type="button" hidden>Sair</button>
+          </div>
+          <p id="accessMessage" class="status-message" role="status"></p>
+        </section>
+
+        <section id="adminTools" class="admin-tools" aria-label="Ferramentas internas" hidden>
+          <form id="uploadForm" class="upload-form">
+            <label class="field-label" for="pdfInput">Novo PDF</label>
+            <div class="file-control">
+              <input id="pdfInput" name="pdf" type="file" accept="application/pdf" />
+              <label class="file-button" for="pdfInput">Escolher PDF</label>
+              <span id="fileName" class="file-name">Nenhum arquivo escolhido</span>
+            </div>
+            <div class="form-grid">
+              <input id="titleInput" name="title" type="text" placeholder="Título" />
+              <input id="categoryInput" name="category" type="text" placeholder="Categoria" />
+            </div>
+            <textarea
+              id="descriptionInput"
+              name="description"
+              rows="3"
+              placeholder="Descrição"
+            ></textarea>
+            <button id="attachButton" class="secondary-button" type="submit">
+              Publicar PDF
+            </button>
+            <p id="uploadMessage" class="status-message" role="status"></p>
+          </form>
+
+          <div class="admin-divider" aria-hidden="true"></div>
+
+          <form id="clientCodeForm" class="client-code-form">
+            <h2 class="admin-subtitle">Código individual</h2>
+            <label class="field-label" for="clientNameInput">Nome do cliente</label>
+            <input
+              id="clientNameInput"
+              name="clientName"
+              type="text"
+              autocomplete="off"
+              placeholder="Nome do cliente"
+              required
+            />
+            <input
+              id="customCodeInput"
+              name="code"
+              type="text"
+              autocomplete="off"
+              aria-label="Código personalizado opcional"
+              placeholder="Código personalizado opcional"
+              pattern="[A-Za-z0-9-]{6,32}"
+              title="Use de 6 a 32 caracteres: letras, números e hífen."
+            />
+            <button id="createCodeButton" class="secondary-button" type="submit">
+              Gerar código
+            </button>
+            <p id="clientCodeMessage" class="status-message" role="status"></p>
+          </form>
+
+          <div class="client-code-panel" aria-label="Códigos de clientes">
+            <div class="section-title">
+              <h2>Códigos</h2>
+              <span id="clientCodeCount">0</span>
+            </div>
+            <div id="clientCodeList" class="client-code-list"></div>
+          </div>
+        </section>
+
+        <section class="filter-panel" aria-label="Filtrar materiais">
+          <label class="field-label" for="searchInput">Buscar material</label>
+          <input id="searchInput" type="search" placeholder="Nome, categoria ou descrição" />
+          <div id="categoryFilters" class="category-filters" aria-label="Categorias"></div>
+        </section>
+
+        <section class="material-section" aria-label="Lista de materiais">
+          <div class="section-title">
+            <h2>Biblioteca</h2>
+            <span id="materialCount">0</span>
+          </div>
+          <div id="materialList" class="material-list"></div>
+        </section>
+      </aside>
+
+      <section class="viewer-panel" aria-label="Visualizador de PDF">
+        <div class="viewer-header">
+          <div>
+            <p id="viewerCategory" class="viewer-category">PDF</p>
+            <h2 id="viewerTitle">Selecione um material</h2>
+            <p id="viewerDescription"></p>
+          </div>
+          <span id="viewerStatus" class="viewer-status">Visualização online</span>
+        </div>
+
+        <div id="emptyState" class="empty-state">
+          <div class="empty-document" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <h2>Nenhum PDF aberto</h2>
+          <p>Escolha um material na biblioteca para abrir aqui.</p>
+        </div>
+
+        <iframe
+          id="pdfViewer"
+          title="Visualizador de material em PDF"
+          loading="lazy"
+          hidden
+        ></iframe>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
