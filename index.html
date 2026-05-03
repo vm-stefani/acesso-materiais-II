@@ -113,14 +113,14 @@
         </section>
       </aside>
 
-      <section class="viewer-panel" aria-label="Visualizador de PDF">
+      <section class="viewer-panel" aria-label="Abertura de PDF">
         <div class="viewer-header">
           <div>
             <p id="viewerCategory" class="viewer-category">PDF</p>
             <h2 id="viewerTitle">Selecione um material</h2>
             <p id="viewerDescription"></p>
           </div>
-          <span id="viewerStatus" class="viewer-status">Visualização online</span>
+          <span id="viewerStatus" class="viewer-status">Nova guia</span>
         </div>
 
         <div id="emptyState" class="empty-state">
@@ -129,16 +129,12 @@
             <span></span>
             <span></span>
           </div>
-          <h2>Nenhum PDF aberto</h2>
-          <p>Escolha um material na biblioteca para abrir aqui.</p>
+          <h2 id="openStateTitle">Nenhum PDF selecionado</h2>
+          <p id="openStateDescription">Escolha um material na biblioteca para abrir em outra guia.</p>
+          <button id="openPdfButton" class="secondary-button viewer-action" type="button" hidden>
+            Abrir PDF novamente
+          </button>
         </div>
-
-        <iframe
-          id="pdfViewer"
-          title="Visualizador de material em PDF"
-          loading="lazy"
-          hidden
-        ></iframe>
       </section>
     </main>
 

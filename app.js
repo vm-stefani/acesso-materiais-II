@@ -50,7 +50,9 @@ const elements = {
   viewerTitle: document.querySelector("#viewerTitle"),
   viewerDescription: document.querySelector("#viewerDescription"),
   viewerStatus: document.querySelector("#viewerStatus"),
-  pdfViewer: document.querySelector("#pdfViewer"),
+  openStateTitle: document.querySelector("#openStateTitle"),
+  openStateDescription: document.querySelector("#openStateDescription"),
+  openPdfButton: document.querySelector("#openPdfButton"),
   emptyState: document.querySelector("#emptyState"),
 };
 
@@ -80,6 +82,11 @@ function bindEvents() {
   elements.uploadForm.addEventListener("submit", uploadPdf);
   elements.pdfInput.addEventListener("change", updateSelectedFileName);
   elements.clientCodeForm.addEventListener("submit", createClientCode);
+  elements.openPdfButton.addEventListener("click", () => {
+    if (state.activeId) {
+      openMaterial(state.activeId, { openInNewTab: true });
+    }
+  });
 }
 
 async function restoreSession() {
@@ -254,7 +261,7 @@ async function uploadPdf(event) {
     updateSelectedFileName();
     elements.uploadMessage.textContent = "PDF publicado.";
     await refreshMaterials();
-    openMaterial(material.id);
+    openMaterial(material.id, { openInNewTab: false });
   } catch {
     elements.uploadMessage.textContent = "Não foi possível publicar o PDF.";
   }
@@ -277,7 +284,7 @@ function attachLocalPdf(file) {
   elements.uploadMessage.textContent = "PDF anexado nesta sessão.";
   renderCategories();
   renderMaterials();
-  openMaterial(id);
+  openMaterial(id, { openInNewTab: false });
 }
 
 async function createClientCode(event) {
@@ -477,7 +484,9 @@ function renderMaterials() {
         <span>${material.local ? "Sessão" : "Online"}</span>
       </div>
     `;
-    button.addEventListener("click", () => openMaterial(material.id));
+    button.addEventListener("click", () => {
+      openMaterial(material.id, { openInNewTab: true });
+    });
     card.append(button);
 
     if (state.role === "admin" && !material.local) {
@@ -496,7 +505,7 @@ function renderMaterials() {
   });
 }
 
-function openMaterial(id) {
+function openMaterial(id, options = {}) {
   if (!state.unlocked) {
     return;
   }
@@ -507,15 +516,30 @@ function openMaterial(id) {
   }
 
   const pdfUrl = material.file || `/api/materials/${encodeURIComponent(material.id)}/pdf`;
+  const viewerUrl = `${pdfUrl}#toolbar=0&navpanes=0&scrollbar=1&view=FitH`;
 
   state.activeId = id;
   elements.viewerCategory.textContent = material.category || "PDF";
   elements.viewerTitle.textContent = material.title;
   elements.viewerDescription.textContent = material.description || "";
-  elements.viewerStatus.textContent = material.local ? "Prévia local" : "Visualização online";
-  elements.emptyState.hidden = true;
-  elements.pdfViewer.hidden = false;
-  elements.pdfViewer.src = `${pdfUrl}#toolbar=0&navpanes=0&scrollbar=1&view=FitH`;
+  elements.viewerStatus.textContent = material.local ? "Pronto para abrir" : "Nova guia";
+  elements.openStateTitle.textContent = "PDF selecionado";
+  elements.openStateDescription.textContent = "Use o botao abaixo para abrir o material em outra guia.";
+  elements.emptyState.hidden = false;
+  elements.openPdfButton.hidden = false;
+
+  if (options.openInNewTab) {
+    const openedTab = window.open(viewerUrl, "_blank");
+    if (openedTab) {
+      openedTab.opener = null;
+    }
+    elements.viewerStatus.textContent = openedTab ? "Aberto em nova guia" : "Nova guia bloqueada";
+    elements.openStateTitle.textContent = openedTab ? "PDF aberto em outra guia" : "Abertura bloqueada";
+    elements.openStateDescription.textContent = openedTab
+      ? "A guia do PDF foi aberta pelo navegador."
+      : "Clique no botao abaixo para abrir o PDF manualmente.";
+  }
+
   renderMaterials();
 }
 
@@ -543,13 +567,15 @@ async function deleteMaterial(id) {
 
 function closeViewer() {
   state.activeId = null;
-  elements.pdfViewer.hidden = true;
-  elements.pdfViewer.removeAttribute("src");
   elements.emptyState.hidden = false;
+  elements.openPdfButton.hidden = true;
   elements.viewerCategory.textContent = "PDF";
   elements.viewerTitle.textContent = "Selecione um material";
   elements.viewerDescription.textContent = "";
-  elements.viewerStatus.textContent = "Visualização online";
+  elements.viewerStatus.textContent = "Nova guia";
+  elements.openStateTitle.textContent = "Nenhum PDF selecionado";
+  elements.openStateDescription.textContent =
+    "Escolha um material na biblioteca para abrir em outra guia.";
 }
 
 function updateSelectedFileName() {

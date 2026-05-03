@@ -1,0 +1,9 @@
+.DS_Store
+.env
+node_modules/
+npm-debug.log*
+
+# Dados gerados em producao/localmente
+data/client-codes.json
+data/materials.json
+materiais/*.pdf
